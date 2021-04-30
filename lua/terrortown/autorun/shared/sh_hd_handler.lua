@@ -9,6 +9,7 @@ if SERVER then
 
    util.AddNetworkString("ttt2_hdn_epop")
    util.AddNetworkString("ttt2_hdn_epop_defeat")
+   util.AddNetworkString("ttt2_hdn_network_wep")
 end
 
 local plymeta = FindMetaTable("Player")
@@ -217,6 +218,10 @@ if SERVER then
           local wep_class = wep:GetClass()
           if (wep.Kind == WEAPON_EQUIP or wep.Kind == WEAPON_EQUIP2 or wep.Kind == WEAPON_HEAVY or wep.Kind == WEAPON_PISTOL or wep.Kind == WEAPON_NADE) and not exclude_class[wep_class] then
             ply:StripWeapon(wep_class)
+          else
+            net.Start("ttt2_hdn_network_wep")
+            net.WriteEntity(wep)
+            net.Broadcast()
           end
         end
     end
@@ -334,5 +339,9 @@ if CLIENT then
             },
             LANG.GetTranslation("hdn_epop_defeat_desc")
         )
+    end)
+
+    net.Receive("ttt2_hdn_network_wep", function()
+                net.ReadEntity().WorldModel = ""
     end)
 end
