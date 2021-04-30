@@ -219,8 +219,10 @@ if SERVER then
           if (wep.Kind == WEAPON_EQUIP or wep.Kind == WEAPON_EQUIP2 or wep.Kind == WEAPON_HEAVY or wep.Kind == WEAPON_PISTOL or wep.Kind == WEAPON_NADE) and not exclude_class[wep_class] then
             ply:StripWeapon(wep_class)
           else
+            wep.WorldModel = ""
             net.Start("ttt2_hdn_network_wep")
             net.WriteEntity(wep)
+            net.WriteString(wep.WorldModel)
             net.Broadcast()
           end
         end
@@ -342,6 +344,6 @@ if CLIENT then
     end)
 
     net.Receive("ttt2_hdn_network_wep", function()
-                net.ReadEntity().WorldModel = ""
+                net.ReadEntity().WorldModel = net.ReadString()
     end)
 end

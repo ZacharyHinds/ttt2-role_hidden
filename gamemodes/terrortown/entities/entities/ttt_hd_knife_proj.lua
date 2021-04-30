@@ -149,6 +149,11 @@ if SERVER then
       wep:SetPos(self:GetPos())
       wep:SetAngles(self:GetAngles())
       wep.IsDropped = true
+      wep.WorldModel = "models/weapons/w_knife_t.mdl"
+      net.Start("ttt2_hdn_network_wep")
+      net.WriteEntity(wep)
+      net.WriteString("models/weapons/w_knife_t.mdl")
+      net.Broadcast()
 
       local prints = self.fingerprints or {}
 

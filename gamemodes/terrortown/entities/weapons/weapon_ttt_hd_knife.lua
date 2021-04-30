@@ -14,7 +14,7 @@ SWEP.Base = "weapon_tttbase"
 
 SWEP.HoldType = "knife"
 SWEP.ViewModel = "models/weapons/cstrike/c_knife_t.mdl"
-SWEP.WorldModel = ""
+SWEP.WorldModel = "models/weapons/w_knife_t.mdl"
 SWEP.UseHands = true 
 
 SWEP.Primary.Damage = 60
@@ -52,8 +52,13 @@ end
 -- end
 
 function SWEP:Equip(owner)
-    if not SERVER then return end
+    if not SERVER or not owner then return end
     self.ViewModel = "models/weapons/cstrike/c_knife_t.mdl"
+    self.WorldModel = ""
+    net.Start("ttt2_hdn_network_wep")
+    net.WriteEntity(self)
+    net.WriteString("")
+    net.Broadcast()
     STATUS:RemoveStatus(owner, "ttt2_hdn_knife_recharge")
 end
 
