@@ -99,7 +99,7 @@ function SWEP:PrimaryAttack()
     local tgt = trace.Entity
     
     if IsValid(tgt) then
-        self:SendWeaponAnim(ACT_VM_HITCENTER)
+        self:SendWeaponAnim(ACT_VM_MISSCENTER)
 
         local eData = EffectData()
         eData:SetStart(spos)
