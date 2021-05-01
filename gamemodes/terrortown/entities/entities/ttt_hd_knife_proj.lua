@@ -44,7 +44,7 @@ end
 
 function ENT:HitPlayer(other, tr)
 
-   local range_dmg = math.max(self.Damage, self.StartPos:Distance(self:GetPos()) / 3)
+   local range_dmg = math.max(self.Damage, self.StartPos:Distance(self:GetPos()) / 4)
 
    if other:Health() < range_dmg + 10 then
       self:KillPlayer(other, tr)
