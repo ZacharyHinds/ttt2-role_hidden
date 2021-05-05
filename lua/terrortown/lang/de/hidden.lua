@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("en")
+L = LANG.GetLanguageTableReference("de")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[HIDDEN.name] = "Verborgene"
