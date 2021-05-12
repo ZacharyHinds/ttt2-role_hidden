@@ -150,7 +150,8 @@ if SERVER then
         ply:SetRenderMode(RENDERMODE_TRANSALPHA)
     end
 
-    function plymeta:SetCloakMode(cloak)
+    function plymeta:SetCloakMode(cloak, delta)
+        delta  = delta or 1
         local clr = self:GetColor()
         if not self.hiddenColor then self.hiddenColor = clr end
         local render = self:GetRenderMode()
@@ -166,11 +167,15 @@ if SERVER then
             local pct = self:Health() / (self:GetMaxHealth() - 25)
             mat = self.hiddenMat
             clr = self.hiddenColor
-            clr.a = math.Clamp(255 - (255 * pct), 0, 125)
+            -- if not self.hiddenCloakTimeout then
+            --     self.hiddenCloakTimeout = CurTime() + (7 * pct) + 3
+            -- end
+            clr.a = math.Clamp((255 - (255 * pct)) * delta, 0, 125)
         else
             clr = self.hiddenColor
             render = self.hiddenRenderMode
             mat = self.hiddenMat
+            self.hiddenCloakTimeout = nil
         end
         self:SetColor(clr)
         self:SetRenderMode(render)
@@ -182,16 +187,28 @@ if SERVER then
         return self.hiddenCloakMode
     end
 
-    function plymeta:UpdateCloaking()
+    function plymeta:UpdateCloaking(timeout)
         if not IsValid(self) or not self:IsPlayer() then return end
         if GetRoundState() ~= ROUND_ACTIVE or self:GetSubRole() ~= ROLE_HIDDEN then self:SetCloakMode(CLOAK_NONE) return end
         if self:IsSpec() or not self:Alive() then self:SetCloakMode(CLOAK_NONE) return end
         if not self:GetNWBool("ttt2_hd_stalker_mode", false) then self:SetCloakMode(CLOAK_NONE) return end
-        if self:Health() >= self:GetMaxHealth() - 10 then
-            self:SetCloakMode(CLOAK_FULL)
+        if timeout then
+            self.hiddenCloakTimeout = CurTime() + 5
+        elseif self.hiddenCloakTimeout and self.hiddenCloakTimeout > CurTime() then
+            timeout = true
+        end
+        if timeout then
+            local start = self.hiddenCloakTimeout - 5
+            local alpha = 1 - (CurTime() - start) / (start)
+            self:SetCloakMode(CLOAK_PARTIAL, alpha)
         else
-            self:SetCloakMode(CLOAK_PARTIAL)
-        end 
+            self:SetCloakMode(CLOAK_FULL)
+        end
+        -- if (self:Health() >= self:GetMaxHealth() - 10) or (not timeout) then
+        --     self:SetCloakMode(CLOAK_FULL)
+        -- else
+        --     self:SetCloakMode(CLOAK_PARTIAL)
+        -- end 
     end
 
     hook.Add("Think", "HiddenCloakThink", function()
@@ -201,6 +218,13 @@ if SERVER then
             if ply:GetCloakMode() == CLOAK_NONE then continue end
             ply:UpdateCloaking()
         end
+    end)
+
+    hook.Add("EntityTakeDamage", "TTT2HiddenTakeDamage", function(tgt, dmg)
+        if not IsValid(tgt) or not tgt:IsPlayer() or not tgt:Alive() or tgt:IsSpec() then return end
+        if tgt:GetSubRole() ~= ROLE_HIDDEN then return end
+        if not tgt:GetNWBool("ttt2_hd_stalker_mode", false) then return end
+        tgt:UpdateCloaking(true)
     end)
 
     local function DeactivateCloaking(ply)
@@ -266,6 +290,8 @@ if SERVER then
             local ply = plys[i]
             ply:SetNWBool("ttt2_hd_stalker_mode", false)
             ply:SetNWBool("ttt2_hdnade_stun", false)
+            ply.hiddenCloakTimeout = nil
+            ply.hiddenUseTimeout = nil
         end
     end
 
@@ -290,7 +316,7 @@ if SERVER then
     hook.Add("TTTPlayerSpeedModifier", "HiddenSpeedBonus", function(ply, _, _, speedMod)
         if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
 
-        speedMod[1] = speedMod[1] * 1.5
+        speedMod[1] = speedMod[1] * 1.7
     end)
 
     hook.Add("TTT2StaminaRegen", "HiddenStaminaMod", function(ply, stamMod)
