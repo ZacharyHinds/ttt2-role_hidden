@@ -22,3 +22,20 @@ hook.Add("Initialize", "ttt2_hdn_status_init", function()
         end
     })
 end)
+
+hook.Add("TTTRenderEntityInfo", "ttt2_hidden_stalker_targetid", function(tData)
+    if not HIDDEN then return end
+    
+    local ent = tData:GetEntity()
+    
+    if not ent:IsPlayer() then return end
+
+    local ply = LocalPlayer()
+
+    -- if ply:GetTeam() == TEAM_HIDDEN or ent:GetTeam() ~= TEAM_HIDDEN then return end
+    if not ent:GetNWBool("ttt2_hd_stalker_mode", false) then return end
+
+    tData:EnableText(false)
+    tData:EnableOutline(false)
+
+end)
