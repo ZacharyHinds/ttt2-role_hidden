@@ -21,7 +21,7 @@ SWEP.Primary.Damage = 60
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = true 
-SWEP.Primary.Delay = 2
+SWEP.Primary.Delay = 1
 SWEP.Primary.Ammo = "none"
 
 SWEP.Secondary.ClipSize = -1
@@ -242,7 +242,7 @@ function SWEP:SecondaryAttack()
           angle.p = -10 + angle.p * -((90 + 10) / 90)
        end
  
-       local vel = math.Clamp((90 - angle.p) * 5.5, 550, 800)
+       local vel = math.Clamp((90 - angle.p) * 6.5, 550, 800)
  
        local vfw = angle:Forward()
        local vrt = angle:Right()
