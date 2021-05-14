@@ -123,7 +123,7 @@ function SWEP:PrimaryAttack()
     if SERVER and trace.Hit and trace.HitNonWorld and IsValid(tgt) then
         if tgt:IsPlayer() and tgt:Health() < (self.Primary.Damage + 5) then
             self:Murder(trace, spos, sdest)
-        elseif tgt:IsPlayer() then
+        else
             local dmg = DamageInfo()
             dmg:SetDamage(self.Primary.Damage)
             dmg:SetAttacker(owner)
