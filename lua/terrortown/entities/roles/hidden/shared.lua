@@ -5,11 +5,12 @@ if SERVER then
 end
 
 roles.InitCustomTeam(ROLE.name, {
-    icon = "vgui/ttt/dynamic/roles/icon_hdn"
+    icon = "vgui/ttt/dynamic/roles/icon_hdn",
+    color = Color(255, 255, 255)
 })
 
 function ROLE:PreInitialize()
-	self.color = Color(0, 0, 0, 255)
+	self.color = Color(0, 0, 0)
 
 	self.abbr = "hdn"
 	self.score.surviveBonusMultiplier = 0.5
