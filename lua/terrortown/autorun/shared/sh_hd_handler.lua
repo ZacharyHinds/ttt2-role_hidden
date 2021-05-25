@@ -327,12 +327,6 @@ if SERVER then
         return ply:GetSubRole() == ROLE_HIDDEN
     end)
 
-    hook.Add("TTTPlayerSpeedModifier", "HiddenSpeedBonus", function(ply, _, _, speedMod)
-        if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
-
-        speedMod[1] = speedMod[1] * 1.6
-    end)
-
     hook.Add("TTT2StaminaRegen", "HiddenStaminaMod", function(ply, stamMod)
         if not IsValid(ply) or not ply:Alive() or ply:IsSpec() then return end
         if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
@@ -363,6 +357,12 @@ if SERVER then
         ply:SetStalkerMode(false)
     end)
 end
+
+hook.Add("TTTPlayerSpeedModifier", "HiddenSpeedBonus", function(ply, _, _, speedMod)
+    if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
+
+    speedMod[1] = speedMod[1] * 1.6
+end)
 
 if CLIENT then
     net.Receive("ttt2_hdn_epop", function()
