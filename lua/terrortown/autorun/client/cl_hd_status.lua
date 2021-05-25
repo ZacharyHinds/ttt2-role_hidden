@@ -14,7 +14,11 @@ hook.Add("Initialize", "ttt2_hdn_status_init", function()
         type = "good",
         DrawInfo = function()
             local ply = LocalPlayer()
-            if ply:Health() >= ply:GetMaxHealth() - 25 then
+            local val = ply:GetNWInt("ttt2_hd_cloak_strength")
+
+            if val then
+                return tostring(math.Round(val)) .. "%"
+            elseif ply:Health() >= ply:GetMaxHealth() - 25 then
                 return tostring(100) .. "%"
             else
                 return tostring(math.Round(math.Clamp((ply:Health() / (ply:GetMaxHealth() - 25) * 100), 0, 50))) .. "%"

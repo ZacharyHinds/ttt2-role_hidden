@@ -164,11 +164,13 @@ if SERVER then
         if not self.hiddenRenderMode then self.hiddenRenderMode = render end
         local mat = self:GetMaterial()
         if not self.hiddenMat then self.hiddenMat = mat end
-        
+
         if cloak == CLOAK_FULL then
             mat = "sprites/heatwave"
             clr = Color(255, 255, 255, 3)
             render = RENDERMODE_TRANSALPHA
+            self:SetNWInt("ttt2_hd_cloak_strength", 100)
+
         elseif cloak == CLOAK_PARTIAL then
             --local pct = math.Clamp(self:Health() / (self:GetMaxHealth() - 25), 0, 1)
 
@@ -179,11 +181,14 @@ if SERVER then
 
             alpha = math.Clamp(alpha, min_alpha, max_alpha)
             clr.a = alpha * 255
+            self:SetNWInt("ttt2_hd_cloak_strength", (1 - alpha) * 100)
+
         else
             clr = self.hiddenColor
             render = self.hiddenRenderMode
             mat = self.hiddenMat
             self.hiddenCloakTimeout = nil
+            self:SetNWInt("ttt2_hd_cloak_strength", 0)
         end
         self:SetColor(clr)
         self:SetRenderMode(render)
@@ -269,6 +274,7 @@ if SERVER then
         BetterWeaponStrip(self, exclude_tbl)
 
         self:SetNWBool("ttt2_hd_stalker_mode", true)
+        self:SetNWInt("ttt2_hd_cloak_strength", 100)
         self:UpdateCloaking()
 
         -- events.Trigger(EVENT_HDN_ACTIVATE, self)
