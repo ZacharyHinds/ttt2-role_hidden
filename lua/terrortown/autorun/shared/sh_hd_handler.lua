@@ -72,9 +72,6 @@ if CLIENT then
         render.SetBlend(0)
 
 
-
-
-
         for i = 1, #plys do
             local ply = plys[i]
             if not ply:IsActive() then continue end
@@ -120,7 +117,7 @@ if CLIENT then
         if client:GetBaseRole() ~= ROLE_HIDDEN or not client:GetNWBool("ttt2_hd_stalker_mode") then return end
 
         DrawColorModify(ColorMod)
-        ColorMod[ "$pp_colour_addr" ] = .09  
+        ColorMod[ "$pp_colour_addr" ] = .09
         ColorMod[ "$pp_colour_addg" ] = .03
 	    ColorMod[ "$pp_colour_contrast" ] = 0.9
 	    ColorMod[ "$pp_colour_colour" ] = 1
@@ -152,8 +149,15 @@ if SERVER then
         ply:SetRenderMode(RENDERMODE_TRANSALPHA)
     end
 
-    function plymeta:SetCloakMode(cloak, delta)
+    local max_pct = 0.6
+    local health_threshold = 25
+    local min_alpha = 0.1
+    local max_alpha = 0.7
+
+    function plymeta:SetCloakMode(cloak, delta, offset, override)
         delta  = delta or 1
+        offset = offset or 0
+
         local clr = self:GetColor()
         if not self.hiddenColor then self.hiddenColor = clr end
         local render = self:GetRenderMode()
@@ -166,13 +170,15 @@ if SERVER then
             clr = Color(255, 255, 255, 3)
             render = RENDERMODE_TRANSALPHA
         elseif cloak == CLOAK_PARTIAL then
-            local pct = self:Health() / (self:GetMaxHealth() - 25)
+            --local pct = math.Clamp(self:Health() / (self:GetMaxHealth() - 25), 0, 1)
+
+            local pct = math.Clamp((self:Health() / (self:GetMaxHealth() - health_threshold) - 1) * -max_pct, 0, 1)
+            local alpha = (override and offset) or (pct + offset) * delta
             mat = self.hiddenMat
             clr = self.hiddenColor
-            -- if not self.hiddenCloakTimeout then
-            --     self.hiddenCloakTimeout = CurTime() + (7 * pct) + 3
-            -- end
-            clr.a = math.Clamp((255 - (255 * pct)) * delta, 0, 125)
+
+            alpha = math.Clamp(alpha, min_alpha, max_alpha)
+            clr.a = alpha * 255
         else
             clr = self.hiddenColor
             render = self.hiddenRenderMode
@@ -189,35 +195,35 @@ if SERVER then
         return self.hiddenCloakMode
     end
 
-    function plymeta:UpdateCloaking(timeout)
+    function plymeta:UpdateCloaking(timeout, delay, alphaOffset, override)
         if not IsValid(self) or not self:IsPlayer() then return end
-        if GetRoundState() ~= ROUND_ACTIVE or self:GetBaseRole() ~= ROLE_HIDDEN then self:SetCloakMode(CLOAK_NONE) return end
+        if GetRoundState() ~= ROUND_ACTIVE or self:GetBaseRole() ~= ROLE_HIDDEN then self:SetCloakMode(CLOAK_NONE) return end  
         if self:IsSpec() or not self:Alive() then self:SetCloakMode(CLOAK_NONE) return end
         if not self:GetNWBool("ttt2_hd_stalker_mode", false) then self:SetCloakMode(CLOAK_NONE) return end
+
         if timeout then
-            self.hiddenCloakTimeout = CurTime() + 5
+            self.hiddenCloakDelay = delay or (8 * (self:Health() / self:GetMaxHealth()))
+            self.hiddenCloakTimeout = CurTime() + self.hiddenCloakDelay
+            self.hiddenAlphaOffset = alphaOffset or 0
         elseif self.hiddenCloakTimeout and self.hiddenCloakTimeout > CurTime() then
             timeout = true
         end
+
         if timeout then
-            local start = self.hiddenCloakTimeout - 5
-            local alpha = 1 - (CurTime() - start) / (start)
-            self:SetCloakMode(CLOAK_PARTIAL, alpha)
+            local start = self.hiddenCloakTimeout - self.hiddenCloakDelay
+            local delta = (1 - (CurTime() - start) / self.hiddenCloakDelay)
+
+            self:SetCloakMode(CLOAK_PARTIAL, delta, self.hiddenAlphaOffset, override)
         else
             self:SetCloakMode(CLOAK_FULL)
         end
-        -- if (self:Health() >= self:GetMaxHealth() - 10) or (not timeout) then
-        --     self:SetCloakMode(CLOAK_FULL)
-        -- else
-        --     self:SetCloakMode(CLOAK_PARTIAL)
-        -- end 
     end
 
     hook.Add("Think", "HiddenCloakThink", function()
         local plys = player.GetAll()
         for i = 1, #plys do
             local ply = plys[i]
-            if ply:GetCloakMode() == CLOAK_NONE then continue end
+            if ply:GetSubRole() ~= ROLE_HIDDEN or ply:GetCloakMode() == CLOAK_NONE then continue end
             ply:UpdateCloaking()
         end
     end)
@@ -226,7 +232,7 @@ if SERVER then
         if not IsValid(tgt) or not tgt:IsPlayer() or not tgt:Alive() or tgt:IsSpec() then return end
         if tgt:GetSubRole() ~= ROLE_HIDDEN then return end
         if not tgt:GetNWBool("ttt2_hd_stalker_mode", false) then return end
-        tgt:UpdateCloaking(true)
+        tgt:UpdateCloaking(true, 5) -- default time of 5 seconds
     end)
 
     local function DeactivateCloaking(ply)
@@ -255,7 +261,7 @@ if SERVER then
     end
 
     function plymeta:ActivateHiddenStalker()
-        if not self:GetSubRole() == ROLE_HIDDEN then return end
+        if self:GetSubRole() ~= ROLE_HIDDEN then return end
 
         local exclude_tbl = {}
         exclude_tbl["weapon_ttt_hd_knife"] = true
