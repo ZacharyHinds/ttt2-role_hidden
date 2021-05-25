@@ -25,7 +25,15 @@ local CLOAK_NONE = 1
 if CLIENT then
     local function HiddenWallhack()
         local client = LocalPlayer()
-        
+
+        if client:GetBaseRole() ~= ROLE_HIDDEN then return end
+
+        if client:GetNWBool("ttt2_hd_stalker_mode", false) then
+            render.UpdateScreenEffectTexture()
+            render.SetMaterial(Material("hud/hvision.vmt", "noclamp smooth"))
+            render.DrawScreenQuad()
+        end
+
         if client:GetSubRole() ~= ROLE_HIDDEN then return end
 
         local plys = player.GetAll()
@@ -43,12 +51,6 @@ if CLIENT then
             client.hiddenHackAlpha = math.Clamp(client.hiddenHackAlpha - 5, 0, 255)
         else
             client.hiddenHackAlpha = math.Clamp(client.hiddenHackAlpha + 2, 0, 255)
-        end
-
-        if client:GetNWBool("ttt2_hd_stalker_mode", false) then
-            render.UpdateScreenEffectTexture()
-            render.SetMaterial(Material("hud/hvision.vmt", "noclamp smooth"))
-            render.DrawScreenQuad()
         end
 
         if client.hiddenHackAlpha <= 0 then return end
