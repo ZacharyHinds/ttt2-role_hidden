@@ -41,13 +41,13 @@ function ENT:Explode(trace)
         for i = 1, #plys do
             local ply = plys[i]
             if not IsValid(ply) or not ply:IsPlayer() or not ply:Alive() or ply:IsSpec() then continue end
-            ply:SetNWBool("ttt2_hdnade_stun", true)
+            ply:SetNWBool("ttt2_hd_nade_stun", true)
         end
         timer.Simple(GetConVar("ttt2_hdn_stun_duration"):GetInt(), function()
             for i = 1, #plys do
                 local ply = plys[i]
                 if not IsValid(ply) or not ply:IsPlayer() then continue end
-                ply:SetNWBool("ttt2_hdnade_stun", false)
+                ply:SetNWBool("ttt2_hd_nade_stun", false)
             end
         end)
 
@@ -80,7 +80,7 @@ if CLIENT then
         local add = 0.2
         local draw = 1
         local delay = 0.01
-        if client:GetNWBool("ttt2_hdnade_stun", false) then
+        if client:GetNWBool("ttt2_hd_nade_stun", false) then
             DrawMotionBlur(add, draw, delay)
         end
     end)

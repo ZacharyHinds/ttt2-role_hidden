@@ -303,7 +303,7 @@ if SERVER then
         for i = 1, #plys do
             local ply = plys[i]
             ply:SetNWBool("ttt2_hd_stalker_mode", false)
-            ply:SetNWBool("ttt2_hdnade_stun", false)
+            ply:SetNWBool("ttt2_hd_nade_stun", false)
             ply.hiddenCloakTimeout = nil
             ply.hiddenUseTimeout = nil
         end
