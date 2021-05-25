@@ -25,7 +25,7 @@ local CLOAK_NONE = 1
 if CLIENT then
     local function HiddenWallhack()
         local client = LocalPlayer()
-
+        
         if client:GetSubRole() ~= ROLE_HIDDEN then return end
 
         local plys = player.GetAll()
@@ -115,7 +115,7 @@ if CLIENT then
     local function DoHiddenVision()
         local client = LocalPlayer()
         if not client:Alive() or client:IsSpec() then return end
-        if client:GetSubRole() ~= ROLE_HIDDEN or not client:GetNWBool("ttt2_hd_stalker_mode") then return end
+        if client:GetBaseRole() ~= ROLE_HIDDEN or not client:GetNWBool("ttt2_hd_stalker_mode") then return end
 
         DrawColorModify(ColorMod)
         ColorMod[ "$pp_colour_addr" ] = .09  
@@ -189,7 +189,7 @@ if SERVER then
 
     function plymeta:UpdateCloaking(timeout)
         if not IsValid(self) or not self:IsPlayer() then return end
-        if GetRoundState() ~= ROUND_ACTIVE or self:GetSubRole() ~= ROLE_HIDDEN then self:SetCloakMode(CLOAK_NONE) return end
+        if GetRoundState() ~= ROUND_ACTIVE or self:GetBaseRole() ~= ROLE_HIDDEN then self:SetCloakMode(CLOAK_NONE) return end
         if self:IsSpec() or not self:Alive() then self:SetCloakMode(CLOAK_NONE) return end
         if not self:GetNWBool("ttt2_hd_stalker_mode", false) then self:SetCloakMode(CLOAK_NONE) return end
         if timeout then
@@ -328,7 +328,7 @@ if SERVER then
 
     hook.Add("ScalePlayerDamage", "HiddenDmgPreTransform", function(ply, _, dmginfo)
         local attacker = dmginfo:GetAttacker()
-        if attacker:GetSubRole() ~= ROLE_HIDDEN then return end
+        if attacker:GetBaseRole() ~= ROLE_HIDDEN then return end
         if attacker:GetNWBool("ttt2_hd_stalker_mode") then return end
 
         dmginfo:ScaleDamage(0.2)
@@ -345,7 +345,7 @@ if SERVER then
     end)
 
     hook.Add("PlayerSpawn", "TTT2HiddenRespawn", function(ply)
-        if ply:GetSubRole() ~= ROLE_HIDDEN then return end
+        if ply:GetBaseRole() ~= ROLE_HIDDEN then return end
         ply:SetStalkerMode(false)
     end)
 end
