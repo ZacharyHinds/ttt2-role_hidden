@@ -175,7 +175,7 @@ if SERVER then
             --local pct = math.Clamp(self:Health() / (self:GetMaxHealth() - 25), 0, 1)
 
             local pct = math.Clamp((self:Health() / (self:GetMaxHealth() - health_threshold) - 1) * -max_pct, 0, 1)
-            local alpha = (override and offset) or (pct + offset) * delta
+            local alpha = ((override and offset) or (pct + offset)) * delta
             mat = self.hiddenMat
             clr = self.hiddenColor
 
