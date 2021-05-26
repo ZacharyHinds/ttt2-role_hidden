@@ -13,7 +13,7 @@ L["ttt2_desc_" .. HIDDEN.name] = [[Der Verborgene ist ein neutraler Killer. Durc
 Allerdings stehen ihm nur noch ein Messer und Spezialgranaten zur Verfügung.]]
 
 --Weapons
-L["weapon_ttt_hdn_nade_name"] = "Blendgranate"
+L["weapon_ttt_hdn_nade_name"] = "Betäubungsgranate"
 L["weapon_ttt_hdn_knife_name"] = "Verborgenes Messer"
 
 --EPOP
