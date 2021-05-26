@@ -316,7 +316,7 @@ if SERVER then
     hook.Add("TTTPlayerSpeedModifier", "HiddenSpeedBonus", function(ply, _, _, speedMod)
         if ply:GetSubRole() ~= ROLE_HIDDEN or not ply:GetNWBool("ttt2_hd_stalker_mode") then return end
 
-        speedMod[1] = speedMod[1] * 1.6
+        speedMod[1] = speedMod[1] * GetConVar("ttt2_hdn_speed"):GetInt()
     end)
 
     hook.Add("TTT2StaminaRegen", "HiddenStaminaMod", function(ply, stamMod)
