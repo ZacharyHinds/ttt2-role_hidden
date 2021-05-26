@@ -17,11 +17,11 @@ SWEP.ViewModel = "models/weapons/cstrike/c_knife_t.mdl"
 SWEP.WorldModel = "models/weapons/w_knife_t.mdl"
 SWEP.UseHands = true 
 
-SWEP.Primary.Damage = 60
+SWEP.Primary.Damage = GetConVar("ttt2_hdn_knife_damage"):GetInt()
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
 SWEP.Primary.Automatic = true 
-SWEP.Primary.Delay = 1
+SWEP.Primary.Delay = GetConVar("ttt2_hdn_knife_swing"):GetInt()
 SWEP.Primary.Ammo = "none"
 
 SWEP.Secondary.ClipSize = -1
