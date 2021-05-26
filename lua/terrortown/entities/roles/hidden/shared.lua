@@ -58,9 +58,9 @@ if SERVER then
         if ply:GetNWBool("ttt2_hd_stalker_mode", false) then return end
 
         if key == IN_RELOAD then
-            local c = (#util.GetAlivePlayers() - 1) * 8
-            local hp = math.Clamp(ply:Health() + c, ply:Health(), 300)
-            local max_hp = math.Clamp(100 + c, ply:GetMaxHealth(), 300)
+            local c = (#util.GetAlivePlayers() - 1) * GetConVar("ttt2_hdn_health_bonus"):GetInt()
+            local hp = math.Clamp(ply:Health() + c, ply:Health(), GetConVar("ttt2_hdn_health_max"):GetInt())
+            local max_hp = math.Clamp(100 + c, ply:GetMaxHealth(), GetConVar("ttt2_hdn_health_max"):GetInt())
             ply:SetMaxHealth(max_hp)
             ply:SetHealth(hp)
             ply:SetStalkerMode(true)
