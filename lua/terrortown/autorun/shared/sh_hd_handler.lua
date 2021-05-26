@@ -117,10 +117,13 @@ if CLIENT then
         if client:GetBaseRole() ~= ROLE_HIDDEN or not client:GetNWBool("ttt2_hd_stalker_mode") then return end
 
         DrawColorModify(ColorMod)
-        ColorMod[ "$pp_colour_addr" ] = .09
-        ColorMod[ "$pp_colour_addg" ] = .03
+        local modifier = client:GetNWInt("ttt2_hd_cloak_strength") / 100 or 1
+        ColorMod[ "$pp_colour_addr" ] = .09 * modifier
+        ColorMod[ "$pp_colour_addg" ] = .03 * modifier
 	    ColorMod[ "$pp_colour_contrast" ] = 0.9
 	    ColorMod[ "$pp_colour_colour" ] = 1
+        --ColorMod[ "$pp_colour_brightness"] = - 0.3 * (1-modifier)
+        ColorMod[ "$pp_colour_addb"] = 0.05 * (1-modifier)
 
         cam.Start3D(EyePos(), EyeAngles())
 
